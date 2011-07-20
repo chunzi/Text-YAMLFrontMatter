@@ -3,17 +3,20 @@ use lib './lib';
 use Text::YAMLFrontMatter::File;
 
 my $m = Text::YAMLFrontMatter::File->new(',test');
-$m->meta({ now => time, pid => $$ });
+$m->meta({ updated => 0, pid => $$ });
+$m->meta('chunzi' => 'bingo');
+$m->meta('updated' => time );
+printf "update: %s\n", $m->meta('updated');
+
 $m->text(q{
 # title
 
 content
 
 });
-print $m->save;
+$m->save;
 
 use Data::Dumper;
-print Dumper $m->meta;
-print $m->markdown;
-print $m->dump;
+my $n = Text::YAMLFrontMatter::File->new(',test');
+print $n->dump;
 

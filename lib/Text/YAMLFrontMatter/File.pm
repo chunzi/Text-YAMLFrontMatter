@@ -15,6 +15,8 @@ sub new {
     my $self = $class->SUPER::new;
     $self->path( $path );
 
+    $self->read if -f $path;
+
     return $self;
 }
 

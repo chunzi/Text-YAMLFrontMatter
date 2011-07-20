@@ -9,7 +9,7 @@ use Carp qw/ croak /;
 use YAML::Syck qw//;
 use Text::Markdown qw//;
 use base qw/ Class::Accessor::Fast /;
-__PACKAGE__->mk_accessors(qw/ meta text /);
+__PACKAGE__->mk_accessors(qw/ text /);
 
 sub new {
     my $class = shift;
@@ -24,7 +24,7 @@ sub new {
 
 sub parse {
     my $self = shift;
-    my $text = shift;
+    my $text = shift || $self->text;
 
     my $meta = {};
     $text =~ s/^(\s*\n)+//;
@@ -40,6 +40,39 @@ sub parse {
     $self->meta( $meta );
     $self->text( $text );
 
+    return $self;
+}
+
+sub meta {
+    my $self = shift;
+
+    # no parameters, get entire meta hash
+    if ( scalar @_ == 0 ){
+        return $self->{'meta'};
+
+    # single parameter
+    }elsif( scalar @_ == 1 ){
+        my $one = shift;
+
+        # isa hash, assign as entire meta
+        if ( ref $one eq 'HASH' ){
+            $self->{'meta'} = $one;
+            return $self->{'meta'};
+
+        # isa a text, treat as meta key
+        }elsif( ref $one eq '' ){
+            return $self->{'meta'}{$one};
+        }
+
+    # two or more parameter
+    }else{
+        croak "not even parameters" unless scalar @_ % 2 == 0;
+        my %set = @_;
+        for ( keys %set ){
+            $self->{'meta'}{$_} = $set{$_};
+        }
+        return $self->{'meta'};
+    }
 }
 
 sub markdown { Text::Markdown->new->markdown( shift->text ) }
