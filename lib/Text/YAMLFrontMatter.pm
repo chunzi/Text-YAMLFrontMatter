@@ -8,6 +8,8 @@ our $VERSION = '0.01';
 use Carp qw/ croak /;
 use YAML::Syck qw//;
 use Text::Markdown qw//;
+use base qw/ Class::Accessor::Fast /;
+__PACKAGE__->mk_accessors(qw/ meta text /);
 
 sub new {
     my $class = shift;
@@ -19,8 +21,6 @@ sub new {
     return $self;
 }
 
-sub text { shift->{'text'} }
-sub meta { shift->{'meta'} }
 
 sub parse {
     my $self = shift;
@@ -37,8 +37,8 @@ sub parse {
         croak "Load YAML Failed: $@" if $@;
     }
 
-    $self->{'meta'} = $meta;
-    $self->{'text'} = $text;
+    $self->meta( $meta );
+    $self->text( $text );
 
 }
 
